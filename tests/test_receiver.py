@@ -22,7 +22,7 @@ def worker_socket(context):
     s.connect("tcp://localhost:7005")
 
 
-@pytest.fixure
+@pytest.fixture
 def receiver():
     return None
 
