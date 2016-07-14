@@ -13,11 +13,13 @@ setup(
     description="Minimalist and agnostic log aggregation with zeromq from tcp",
     url="https://github.com/TheGhouls/zerolog",
     keywords=["logging", "logs", "zeromq", "rsyslog"],
-    classfifiers=[
+    classifiers=[
         "Programming Language :: Python :: 3.5"
     ],
     install_requires=[
         "pyzmq"
-    ]
+    ],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest', 'pytest-timeout']
 )
 
