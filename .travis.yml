@@ -9,6 +9,6 @@ install:
   - pip install coveralls
 script:
   - python setup.py install
-  - coverage run --source zerolog -m py.test -v
+  - coverage run --source zerolog -m py.test -v tests/
 after_success:
   - coveralls
