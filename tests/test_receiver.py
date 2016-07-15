@@ -57,7 +57,7 @@ def test_receiver(context, sender_socket, receiver, worker_socket):
 def test_receiver_error():
     """Receiver should correctly raise errors"""
     with pytest.raises(TypeError):
-        Receiver("127.0.0.1", 6700, output_port=6705, output_socket="/tmp/bad.sock")
+        Receiver("127.0.0.1", 6700, output_port=0, output_socket="/tmp/bad.sock")
 
 
 @pytest.mark.timeout(5)
@@ -73,7 +73,8 @@ def test_receiver_ipc(sender_socket):
 
 def test_receiver_no_args():
     """Receiver should be able to instanciate without output arguments"""
-    Receiver("127.0.0.1", 6700)
+    r = Receiver("127.0.0.1", 6700)
+    r.context.destroy()
 
 
 def test_receiver_log_config():

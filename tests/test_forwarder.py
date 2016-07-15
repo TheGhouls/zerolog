@@ -68,13 +68,15 @@ def test_forwarder(forwarder, context, sender):
     forwarder.terminate()
 
 
-@patch('zmq.proxy')
-def test_forwarder_basic_run(zmqProxy):
+@patch('zerolog.forwarder.run_proxy')
+@pytest.mark.timeout(2)
+def test_forwarder_basic_run(run_proxy):
     """Test default forwarder call"""
-    start_forwarder(6102, 6101, 6900)
+    start_forwarder(0, 0)
 
 
-@patch('zmq.proxy')
-def test_forwarder_run_without_monitor(zmqProxy):
+@patch('zerolog.forwarder.run_proxy')
+@pytest.mark.timeout(2)
+def test_forwarder_run_without_monitor(run_proxy):
     """Test default forwarder call without monitor"""
-    start_forwarder(8001, 8002)
+    start_forwarder(0, 0)
