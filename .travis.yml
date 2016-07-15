@@ -1,0 +1,12 @@
+language: python
+python:
+  - '3'
+install:
+  - pip install -r requirements.txt
+  - pip install pytest pytest-runner pytest-timeout mock coverage
+  - pip install coveralls
+script:
+  - python setup.py install
+  - coverage run --source zerolog -m py.test -v
+after_success:
+  - coveralls
