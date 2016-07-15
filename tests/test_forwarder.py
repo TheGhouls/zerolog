@@ -59,7 +59,8 @@ def test_forwarder(forwarder, sender):
     assert data is not None
 
 @patch('zerolog.forwarder.zmq.proxy')
-def test_forwarder_basic_run(run_proxy):
+@patch('zerolog.forwarder.zmq.Socket.bind')
+def test_forwarder_basic_run(run_proxy, bind):
     """Test default forwarder calls"""
     start_forwarder(6010, 6011, 6012)
     start_forwarder(6020, 6021)

@@ -36,6 +36,7 @@ def worker_socket(context):
 def receiver():
     r = Receiver("127.0.0.1", 6700, output_port=6705)
     r.forwarder.setsockopt(zmq.LINGER, 0)
+    r.ventilator.setsockopt(zmq.LINGER, 0)
     return r
 
 
@@ -65,6 +66,7 @@ def test_receiver_ipc(sender_socket):
     """Receiver should be able to use ipc socket"""
     r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")
     r.forwarder.setsockopt(zmq.LINGER, 0)
+    r.ventilator.setsockopt(zmq.LINGER, 0)
 
     for i in range(10):
         sender_socket.send_multipart([b"test", b"data"])
