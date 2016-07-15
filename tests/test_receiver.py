@@ -10,13 +10,8 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 @pytest.fixture(scope='module')
-def context(request):
+def sender_socket():
     context = zmq.Context()
-    return context
-
-
-@pytest.fixture(scope='module')
-def sender_socket(context):
     s = context.socket(zmq.PUB)
     s.setsockopt(zmq.LINGER, 0)
     s.bind("tcp://*:6700")
@@ -25,7 +20,8 @@ def sender_socket(context):
 
 
 @pytest.fixture(scope='module')
-def worker_socket(context):
+def worker_socket():
+    context = zmq.Context()
     s = context.socket(zmq.PULL)
     s.setsockopt(zmq.LINGER, 0)
     s.connect("tcp://127.0.0.1:6705")
@@ -41,7 +37,7 @@ def receiver():
 
 
 @pytest.mark.timeout(20)
-def test_receiver(context, sender_socket, receiver, worker_socket):
+def test_receiver(sender_socket, receiver, worker_socket):
     """Receiver should be able to correctly receive messages and send them back"""
     for i in range(10):
         sender_socket.send_multipart([b"", b"data"])
