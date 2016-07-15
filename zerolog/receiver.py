@@ -2,7 +2,13 @@
 
 Contain default receiver. Receiver will be in charge to get data from forwarder
 """
+import time
+import logging
+
 import zmq
+
+
+log = logging.getLogger(__name__)
 
 
 class Receiver:
@@ -35,15 +41,49 @@ class Receiver:
     :param str topic: publish topic to listen (default to all)
     :param int output_port: port to bind for sending data to workers
     :param str output_socket: location of ipc socket to use for sending data to workers
+    :param str logging_config: file path to logging configuration
     :raise: TypeError
     """
 
-    def __init__(self, forwarder_address, forwarder_port, topic=None):
-        pass
+    def __init__(self, forwarder_address, forwarder_port, topic=None, *args, **kwargs):
+        self.context = zmq.Context()
 
+        topic = topic or ""
+        self.forwarder = self.context.socket(zmq.SUB)
+        self.forwarder.setsockopt_string(zmq.SUBSCRIBE, topic)
+        self.forwarder.connect("tcp://{}:{}".format(forwarder_address, forwarder_port))
+
+        self.ventilator = self.context.socket(zmq.PUSH)
+
+        output_port = kwargs.get("output_port", None)
+        output_socket = kwargs.get("output_socket", None)
+
+        if output_port is not None and output_socket is not None:
+            raise TypeError("Cannot use both TCP and unix sockets for output")
+
+        output_binding = self.setup_output_socket(output_port, output_socket)
+
+        # sockets warmup
+        time.sleep(1)
+
+        if kwargs.get('logging_config') is not None:
+            logging.config.fileConfig(kwargs.get('logging_config'))
+
+        log.info("Receiver started")
+        log.info("Listening from forwarder on %s:%s", forwarder_address, forwarder_port)
+        log.info("Sending data to worker on %s", output_binding)
 
     def setup_output_socket(self, output_port=None, output_socket=None):
         """Setup PUSH output socket"""
+        if output_port is None and output_socket is None:
+            output_binding = "tcp://*:6200"
+        elif output_socket is None:
+            output_binding = "tcp://*:{}".format(output_port)
+        else:
+            output_binding = "ipc://{}".format(output_socket)
+
+        self.ventilator.bind(output_binding)
+        return output_binding
 
     def recv_data(self):
         """Receive data from forwarder and return them.
@@ -52,9 +92,18 @@ class Receiver:
         :return: data from forwarder
         :rtype: bytes
         """
-        pass
+        data = self.forwarder.recv_multipart()
+        return data[1]
 
-    def process(self, data):
-        """Process data and send them to workers"""
-        pass
+    def process(self):
+        """Main receiver loop"""
+        try:
+            while 1:
+                data = self.recv_data
+                self.ventilator.send(data)
+        except (Exception, KeyboardInterrupt) as e:
+            log.error("Exception occured: %s", e)
+            self.forwarder.close()
+            self.ventilator.close()
+            self.context.destroy()
 
