@@ -6,7 +6,7 @@ def start_forwarder(pub_port, receive_port, mon_port=None):
 
     :param int pub_port: port number to use for publishing messages to workers
     :param int receive_port: port number to use for receiving messages
-    :pram int mon_port (optional): port to use for monitor socket
+    :param int mon_port (optional): port to use for monitor socket
     """
     context = zmq.Context()
 
