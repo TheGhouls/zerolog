@@ -40,7 +40,7 @@ def receiver():
     return r
 
 
-@pytest.mark.timeout(10)
+@pytest.mark.timeout(20)
 def test_receiver(context, sender_socket, receiver, worker_socket):
     """Receiver should be able to correctly receive messages and send them back"""
     for i in range(10):
