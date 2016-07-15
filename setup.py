@@ -20,6 +20,6 @@ setup(
         "pyzmq"
     ],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'pytest-timeout']
+    tests_require=['pytest', 'pytest-timeout', 'mock']
 )
 

@@ -1,6 +1,7 @@
 import time
 import socket
 from multiprocessing import Process
+from unittest.mock import patch
 
 import zmq
 import pytest
@@ -16,8 +17,14 @@ def forwarder():
 
 
 @pytest.fixture
-def context():
-    return zmq.Context()
+def context(request):
+    context = zmq.Context()
+
+    def fin():
+        context.destroy()
+
+    request.addfinalizer(fin)
+    return context
 
 
 @pytest.fixture
@@ -59,3 +66,15 @@ def test_forwarder(forwarder, context, sender):
     assert data is not None
 
     forwarder.terminate()
+
+
+@patch('zmq.proxy')
+def test_forwarder_basic_run(zmqProxy):
+    """Test default forwarder call"""
+    start_forwarder(6102, 6101, 6900)
+
+
+@patch('zmq.proxy')
+def test_forwarder_run_without_monitor(zmqProxy):
+    """Test default forwarder call without monitor"""
+    start_forwarder(8001, 8002)
