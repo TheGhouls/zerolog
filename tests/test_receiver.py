@@ -25,20 +25,26 @@ def worker_socket():
     s = context.socket(zmq.PULL)
     s.setsockopt(zmq.LINGER, 0)
     s.connect("tcp://127.0.0.1:6705")
+    time.sleep(1)
     return s
 
 
-@pytest.fixture(scope='module')
-def receiver():
-    r = Receiver("127.0.0.1", 6700, output_port=6705)
-    r.forwarder.setsockopt(zmq.LINGER, 0)
-    r.ventilator.setsockopt(zmq.LINGER, 0)
-    return r
+@pytest.fixture(scope='session')
+def worker_ipc():
+    context = zmq.Context()
+    s = context.socket(zmq.PULL)
+    s.setsockopt(zmq.LINGER, 0)
+    s.connect("ipc:///tmp/test.sock")
+    time.sleep(1)
+    return s
 
 
-@pytest.mark.timeout(20)
-def test_receiver(sender_socket, receiver, worker_socket):
+def test_receiver(sender_socket, worker_socket):
     """Receiver should be able to correctly receive messages and send them back"""
+    receiver = Receiver("127.0.0.1", 6700, output_port=6705)
+    receiver.forwarder.setsockopt(zmq.LINGER, 0)
+    receiver.ventilator.setsockopt(zmq.LINGER, 0)
+
     for i in range(10):
         sender_socket.send_multipart([b"", b"data"])
     data = receiver.recv_data()
@@ -50,23 +56,24 @@ def test_receiver(sender_socket, receiver, worker_socket):
     assert data is not None
 
 
-@pytest.mark.timeout(5)
 def test_receiver_error():
     """Receiver should correctly raise errors"""
     with pytest.raises(TypeError):
         Receiver("127.0.0.1", 6700, output_port=0, output_socket="bad.sock")
 
 
-@pytest.mark.timeout(5)
-def test_receiver_ipc(sender_socket):
+def test_receiver_ipc(sender_socket, worker_ipc):
     """Receiver should be able to use ipc socket"""
     r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")
-    r.forwarder.setsockopt(zmq.LINGER, 0)
-    r.ventilator.setsockopt(zmq.LINGER, 0)
 
     for i in range(10):
         sender_socket.send_multipart([b"test", b"data"])
     data = r.recv_data()
+    assert data is not None
+
+    r.ventilator.send(data)
+
+    data = worker_ipc.recv()
     assert data is not None
 
 
@@ -85,7 +92,6 @@ def test_receiver_log_config():
     r.ventilator.setsockopt(zmq.LINGER, 0)
 
 
-@pytest.mark.timeout(5)
 def test_receiver_run(sender_socket):
     """Receiver run method should correctly run and except"""
     r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")

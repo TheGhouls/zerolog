@@ -10,6 +10,7 @@ from zerolog.worker import BaseWorker
 def sender():
     context = zmq.Context()
     s = context.socket(zmq.PUSH)
+    s.setsockopt(zmq.LINGER, 0)
     s.bind("tcp://*:6800")
     time.sleep(1)
     return s
