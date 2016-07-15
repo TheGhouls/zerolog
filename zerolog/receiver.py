@@ -106,4 +106,4 @@ class Receiver:
             self.forwarder.close()
             self.ventilator.close()
             self.context.destroy()
-
+            raise
