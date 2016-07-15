@@ -1,5 +1,4 @@
 import time
-import socket
 from multiprocessing import Process
 from unittest.mock import patch
 
@@ -18,15 +17,8 @@ def forwarder():
     return p
 
 
-@pytest.fixture(scope='module')
-def sender():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    return sock
-
-
-def test_forwarder(forwarder, sender):
+def test_forwarder(forwarder, sender, context):
     """Monitor socket should correctly send data"""
-    context = zmq.Context()
     mon = context.socket(zmq.SUB)
     mon.setsockopt_string(zmq.SUBSCRIBE, "")
     mon.setsockopt(zmq.LINGER, 0)
@@ -52,7 +44,9 @@ def test_forwarder(forwarder, sender):
 
     data = recv.recv()
     assert data is not None
+    sender.close()
     forwarder.terminate()
+
 
 @patch('zerolog.forwarder.zmq.proxy')
 @patch('zerolog.forwarder.zmq.Socket.bind')

@@ -1,5 +1,6 @@
 import os
 import time
+from unittest.mock import patch
 
 import zmq
 import pytest
@@ -10,45 +11,33 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 @pytest.fixture(scope='module')
-def sender_socket():
-    context = zmq.Context()
+def sender_socket(context):
     s = context.socket(zmq.PUB)
-    s.setsockopt(zmq.LINGER, 0)
     s.bind("tcp://*:6700")
     time.sleep(1)
     return s
 
 
 @pytest.fixture(scope='module')
-def worker_socket():
-    context = zmq.Context()
+def worker_socket(context):
     s = context.socket(zmq.PULL)
-    s.setsockopt(zmq.LINGER, 0)
     s.connect("tcp://127.0.0.1:6705")
     time.sleep(1)
     return s
 
 
-@pytest.fixture(scope='session')
-def worker_ipc():
-    context = zmq.Context()
-    s = context.socket(zmq.PULL)
-    s.setsockopt(zmq.LINGER, 0)
-    s.connect("ipc:///tmp/test.sock")
-    time.sleep(1)
-    return s
-
-
-def test_receiver(sender_socket, worker_socket):
+def test_receiver(receiver, sender_socket, worker_socket):
     """Receiver should be able to correctly receive messages and send them back"""
-    receiver = Receiver("127.0.0.1", 6700, output_port=6705)
-    receiver.forwarder.setsockopt(zmq.LINGER, 0)
-    receiver.ventilator.setsockopt(zmq.LINGER, 0)
-
     for i in range(10):
         sender_socket.send_multipart([b"", b"data"])
     data = receiver.recv_data()
     assert data is not None
+
+    while data:
+        try:
+            data = receiver.forwarder.recv(zmq.NOBLOCK)
+        except zmq.Again:
+            pass
 
     receiver.ventilator.send(data)
 
@@ -56,49 +45,39 @@ def test_receiver(sender_socket, worker_socket):
     assert data is not None
 
 
-def test_receiver_error():
+@patch('zerolog.receiver.zmq.Socket.bind')
+def test_receiver_error(bind):
     """Receiver should correctly raise errors"""
     with pytest.raises(TypeError):
         Receiver("127.0.0.1", 6700, output_port=0, output_socket="bad.sock")
 
 
-def test_receiver_ipc(sender_socket, worker_ipc):
+@patch('zerolog.receiver.zmq.Socket.bind')
+def test_receiver_ipc(bind):
     """Receiver should be able to use ipc socket"""
-    r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")
-
-    for i in range(10):
-        sender_socket.send_multipart([b"test", b"data"])
-    data = r.recv_data()
-    assert data is not None
-
-    r.ventilator.send(data)
-
-    data = worker_ipc.recv()
-    assert data is not None
+    Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")
 
 
-def test_receiver_no_args():
+@patch('zerolog.receiver.zmq.Socket.bind')
+def test_receiver_no_args(bind):
     """Receiver should be able to instanciate without output arguments"""
     r = Receiver("127.0.0.1", 6700)
     r.forwarder.setsockopt(zmq.LINGER, 0)
     r.ventilator.setsockopt(zmq.LINGER, 0)
 
 
-def test_receiver_log_config():
+@patch('zerolog.receiver.zmq.Socket.bind')
+def test_receiver_log_config(bind):
     """Receiver should be able to use logging configuration file"""
     cf = os.path.join(BASE_DIR, "fixtures/log.cfg")
-    r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock", logging_config=cf)
-    r.forwarder.setsockopt(zmq.LINGER, 0)
-    r.ventilator.setsockopt(zmq.LINGER, 0)
+    Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock", logging_config=cf)
 
 
 def test_receiver_run(sender_socket):
     """Receiver run method should correctly run and except"""
-    r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")
-    r.forwarder.setsockopt(zmq.LINGER, 0)
-    r.ventilator.setsockopt(zmq.LINGER, 0)
-    r.ventilator = None
+    receiver = Receiver("127.0.0.1", 6700, output_socker="/tmp/test.sock")
+    receiver.ventilator = None
 
     sender_socket.send_multipart([b"test", b"data"])
     with pytest.raises(AttributeError):
-        r.run()
+        receiver.run()
