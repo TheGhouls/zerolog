@@ -11,7 +11,6 @@ from zerolog.forwarder import start_forwarder
 @pytest.fixture
 def forwarder():
     """Return a process for forwarder"""
-    import multiprocessing
     p = Process(target=start_forwarder, args=(6002, 6001, 6500))
     return p
 
@@ -31,6 +30,8 @@ def sender():
 def test_forwarder(forwarder, context, sender):
     """Monitor socket should correctly send data"""
     forwarder.start()
+
+    # waiting for warmup
     time.sleep(1)
 
     mon = context.socket(zmq.SUB)
@@ -43,6 +44,10 @@ def test_forwarder(forwarder, context, sender):
 
     server_address = ('localhost', 6001)
     sender.connect(server_address)
+
+    # waiting for warmup
+    time.sleep(1)
+
     sender.sendall(b"test test")
 
     data = mon.recv()
