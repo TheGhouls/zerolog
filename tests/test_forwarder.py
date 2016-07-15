@@ -9,44 +9,37 @@ import pytest
 from zerolog.forwarder import start_forwarder
 
 
-@pytest.fixture
-def forwarder():
+@pytest.fixture(scope='module')
+def forwarder(request):
     """Return a process for forwarder"""
     p = Process(target=start_forwarder, args=(6002, 6001, 6500))
+    p.start()
+    time.sleep(1)
+
+    def fin():
+        p.terminate()
+
+    request.addfinalizer(fin)
     return p
 
 
-@pytest.fixture
-def context(request):
-    context = zmq.Context()
-
-    def fin():
-        context.destroy()
-
-    request.addfinalizer(fin)
-    return context
-
-
-@pytest.fixture
+@pytest.fixture(scope='module')
 def sender():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     return sock
 
 
-@pytest.mark.timeout(5)
-def test_forwarder(forwarder, context, sender):
+def test_forwarder(forwarder, sender):
     """Monitor socket should correctly send data"""
-    forwarder.start()
-
-    # waiting for warmup
-    time.sleep(1)
-
+    context = zmq.Context()
     mon = context.socket(zmq.SUB)
     mon.setsockopt_string(zmq.SUBSCRIBE, "")
+    mon.setsockopt(zmq.LINGER, 0)
     mon.connect("tcp://localhost:6500")
 
     recv = context.socket(zmq.SUB)
     recv.setsockopt_string(zmq.SUBSCRIBE, "")
+    recv.setsockopt(zmq.LINGER, 0)
     recv.connect("tcp://localhost:6002")
 
     server_address = ('localhost', 6001)
@@ -65,18 +58,8 @@ def test_forwarder(forwarder, context, sender):
     data = recv.recv()
     assert data is not None
 
-    forwarder.terminate()
-
-
-@patch('zerolog.forwarder.run_proxy')
-@pytest.mark.timeout(2)
+@patch('zerolog.forwarder.zmq.proxy')
 def test_forwarder_basic_run(run_proxy):
-    """Test default forwarder call"""
-    start_forwarder(0, 0)
-
-
-@patch('zerolog.forwarder.run_proxy')
-@pytest.mark.timeout(2)
-def test_forwarder_run_without_monitor(run_proxy):
-    """Test default forwarder call without monitor"""
-    start_forwarder(0, 0)
+    """Test default forwarder calls"""
+    start_forwarder(6010, 6011, 6012)
+    start_forwarder(6020, 6021)

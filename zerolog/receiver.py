@@ -47,7 +47,14 @@ class Receiver:
     """
 
     def __init__(self, forwarder_address, forwarder_port, topic=None, *args, **kwargs):
-        self.context = zmq.Context()
+
+        output_port = kwargs.get("output_port", None)
+        output_socket = kwargs.get("output_socket", None)
+
+        if output_port is not None and output_socket is not None:
+            raise TypeError("Cannot use both TCP and unix sockets for output")
+
+        self.context = zmq.Context.instance()
 
         topic = topic or ""
         self.forwarder = self.context.socket(zmq.SUB)
@@ -55,12 +62,6 @@ class Receiver:
         self.forwarder.connect("tcp://{}:{}".format(forwarder_address, forwarder_port))
 
         self.ventilator = self.context.socket(zmq.PUSH)
-
-        output_port = kwargs.get("output_port", None)
-        output_socket = kwargs.get("output_socket", None)
-
-        if output_port is not None and output_socket is not None:
-            raise TypeError("Cannot use both TCP and unix sockets for output")
 
         output_binding = self.setup_output_socket(output_port, output_socket)
 
