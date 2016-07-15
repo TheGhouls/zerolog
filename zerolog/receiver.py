@@ -4,6 +4,7 @@ Contain default receiver. Receiver will be in charge to get data from forwarder
 """
 import time
 import logging
+import logging.config
 
 import zmq
 
@@ -95,15 +96,13 @@ class Receiver:
         data = self.forwarder.recv_multipart()
         return data[1]
 
-    def process(self):
+    def run(self):
         """Main receiver loop"""
         try:
             while 1:
-                data = self.recv_data
+                data = self.recv_data()
                 self.ventilator.send(data)
         except (Exception, KeyboardInterrupt) as e:
             log.error("Exception occured: %s", e)
-            self.forwarder.close()
-            self.ventilator.close()
             self.context.destroy()
             raise

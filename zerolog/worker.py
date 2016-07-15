@@ -22,7 +22,7 @@ class BaseWorker:
 
         :param mixed data: data received from backend
         """
-        raise NotImplemented("You must override the process data methode")
+        raise NotImplementedError("You must override the process data methode")
 
     def run(self):
         try:
@@ -31,6 +31,5 @@ class BaseWorker:
                 self.process_data(data)
         except (Exception, KeyboardInterrupt) as e:
             log.error("Exception raised : %s", e)
-            self.backend.close()
             self.context.destroy()
             raise
