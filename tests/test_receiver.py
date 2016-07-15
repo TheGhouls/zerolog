@@ -78,7 +78,7 @@ def test_receiver_no_args():
     """Receiver should be able to instanciate without output arguments"""
     r = Receiver("127.0.0.1", 6700)
     r.forwarder.setsockopt(zmq.LINGER, 0)
-    r.context.destroy()
+    r.ventilator.setsockopt(zmq.LINGER, 0)
 
 
 def test_receiver_log_config():
@@ -86,6 +86,7 @@ def test_receiver_log_config():
     cf = os.path.join(BASE_DIR, "fixtures/log.cfg")
     r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock", logging_config=cf)
     r.forwarder.setsockopt(zmq.LINGER, 0)
+    r.ventilator.setsockopt(zmq.LINGER, 0)
 
 
 @pytest.mark.timeout(5)
@@ -93,6 +94,7 @@ def test_receiver_run(sender_socket):
     """Receiver run method should correctly run and except"""
     r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")
     r.forwarder.setsockopt(zmq.LINGER, 0)
+    r.ventilator.setsockopt(zmq.LINGER, 0)
     r.ventilator = None
 
     sender_socket.send_multipart([b"test", b"data"])

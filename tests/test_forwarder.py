@@ -10,16 +10,11 @@ from zerolog.forwarder import start_forwarder
 
 
 @pytest.fixture(scope='module')
-def forwarder(request):
+def forwarder():
     """Return a process for forwarder"""
     p = Process(target=start_forwarder, args=(6002, 6001, 6500))
     p.start()
     time.sleep(1)
-
-    def fin():
-        p.terminate()
-
-    request.addfinalizer(fin)
     return p
 
 
@@ -57,6 +52,7 @@ def test_forwarder(forwarder, sender):
 
     data = recv.recv()
     assert data is not None
+    forwarder.terminate()
 
 @patch('zerolog.forwarder.zmq.proxy')
 @patch('zerolog.forwarder.zmq.Socket.bind')
