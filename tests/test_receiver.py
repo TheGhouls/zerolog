@@ -82,13 +82,15 @@ def test_receiver_no_args():
 def test_receiver_log_config():
     """Receiver should be able to use logging configuration file"""
     cf = os.path.join(BASE_DIR, "fixtures/log.cfg")
-    Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock", logging_config=cf)
+    r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock", logging_config=cf)
+    r.forwarder.setsockopt(zmq.LINGER, 0)
 
 
 @pytest.mark.timeout(5)
 def test_receiver_run(sender_socket):
     """Receiver run method should correctly run and except"""
     r = Receiver("127.0.0.1", 6700, output_socket="/tmp/test.sock")
+    r.forwarder.setsockopt(zmq.LINGER, 0)
     r.ventilator = None
 
     sender_socket.send_multipart([b"test", b"data"])
