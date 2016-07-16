@@ -20,6 +20,10 @@ setup(
         "pyzmq"
     ],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'pytest-timeout', 'mock']
+    tests_require=['pytest', 'pytest-timeout', 'mock'],
+    entry_points={
+        'console_scripts': [
+            'zerolog = zerolog.commands.main:main'
+        ]
+    }
 )
-
