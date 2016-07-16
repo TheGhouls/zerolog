@@ -1,10 +1,15 @@
+import os
+import sys
 import logging
 import importlib
 
 log = logging.getLogger(__name__)
 
 
-def get_class(kls):
+def get_class(kls, directory=None):
+    if directory is not None:
+        sys.path.append(os.path.abspath(directory))
+
     parts = kls.split('.')
     mod_name = ".".join(parts[:-1])
     mod = importlib.import_module(mod_name)
@@ -15,7 +20,7 @@ def get_class(kls):
 def run(args):
     """Main worker run command"""
     try:
-        kls = get_class(args.worker_class)
+        kls = get_class(args.worker_class, args.directory)
         worker = kls(args.backend)
         worker.run()
     except ImportError:
@@ -37,6 +42,12 @@ def worker_command(sp):
     parser.add_argument(
         "worker_class",
         help="class to use as worker"
+    )
+    parser.add_argument(
+        "-d",
+        "--directory",
+        help="directory to append to sys.path for import (optional)",
+        default=None
     )
 
     parser.set_defaults(func=run)
