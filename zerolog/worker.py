@@ -15,7 +15,7 @@ class BaseWorker:
 
     .. note::
         For conveniance, default recv method for backend socket is ``recv_string()`` from pyzmq.
-        But you can change it easily by overloading it in your worker, for example::
+        But you can change it easily by overloading ``recv_func`` in your worker, for example::
 
             def __init__(self, backend, *args, **kwargs):
                 super(MyWorkerClase, self).__init__(backend, *args, **kwargs)
