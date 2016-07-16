@@ -20,10 +20,10 @@ def run(args):
         worker.run()
     except ImportError:
         log.error("Bad module provided for worker class")
-        return
+        raise
     except AttributeError:
         log.error("Class not found")
-        return
+        raise
 
 
 def worker_command(sp):
