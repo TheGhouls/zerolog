@@ -1,4 +1,5 @@
 import time
+import socket
 from multiprocessing import Process
 from unittest.mock import patch
 
@@ -17,8 +18,16 @@ def forwarder():
     return p
 
 
-def test_forwarder(forwarder, sender, context):
-    """Monitor socket should correctly send data"""
+@pytest.fixture(scope='module')
+def tcp_sender():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    return sock
+
+
+def test_forwarder(forwarder, tcp_sender, context):
+    """Monitor should correctly send data"""
+    sender = tcp_sender
+
     mon = context.socket(zmq.SUB)
     mon.setsockopt_string(zmq.SUBSCRIBE, "")
     mon.setsockopt(zmq.LINGER, 0)
@@ -49,8 +58,11 @@ def test_forwarder(forwarder, sender, context):
 
 
 @patch('zerolog.forwarder.zmq.proxy')
+@patch('zerolog.forwarder.zmq.Context')
+@patch('zerolog.forwarder.zmq.Context.socket')
+@patch('zerolog.forwarder.zmq.Socket')
 @patch('zerolog.forwarder.zmq.Socket.bind')
-def test_forwarder_basic_run(run_proxy, bind):
-    """Test default forwarder calls"""
+def test_forwarder_basic_run(*args):
+    """forwarder should correctly run with different parameters"""
     start_forwarder(6010, 6011, 6012)
     start_forwarder(6020, 6021)

@@ -7,8 +7,7 @@ from zerolog.worker import BaseWorker
 
 
 @pytest.fixture(scope='module')
-def sender():
-    context = zmq.Context()
+def sender(context):
     s = context.socket(zmq.PUSH)
     s.setsockopt(zmq.LINGER, 0)
     s.bind("tcp://*:6800")
