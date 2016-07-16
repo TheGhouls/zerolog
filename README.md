@@ -29,5 +29,5 @@ Or manualy using
 
 
 ```
-py.test tests/
+py.test -v tests/
 ```
