@@ -30,13 +30,18 @@ class BaseWorker:
         self.recv_func = self.backend.recv_string
 
     def process_data(self, data):
-        """Process data received from backend
+        """Process data
 
         :param mixed data: data received from backend
+        :raises: NotImplementedError
         """
         raise NotImplementedError("You must override the process data methode")
 
     def run(self):
+        """Main loop for receive messages and process them
+
+        ``self.recv_func`` is used to receive data from backend
+        """
         try:
             while 1:
                 data = self.recv_func()

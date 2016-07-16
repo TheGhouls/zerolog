@@ -13,7 +13,7 @@ def args():
     class Args:
         backend = "tcp://127.0.0.1:6200"
         worker_class = "zerolog.worker.BaseWorker"
-        directory = None
+        directory = "/tmp"
 
     return Args()
 
