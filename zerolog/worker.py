@@ -10,6 +10,9 @@ log = logging.getLogger(__name__)
 class BaseWorker:
     """Base worker class.
 
+    This class cannot be used "as is", it will raises an ``ImplementationError`` in ``process_data`` methode.
+    ``BaseWorker`` provide only a skeleton to help you to develop your own workers
+
     :param str backend: backend zeromq string to connect to receiver. e.g: ``ipc://unix.socket``
     """
     def __init__(self, backend, *args, **kwargs):
