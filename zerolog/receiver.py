@@ -64,7 +64,6 @@ class Receiver:
         self.ventilator = self.context.socket(zmq.PUSH)
 
         output_binding = self.setup_output_socket(output_port, output_socket)
-
         # sockets warmup
         time.sleep(1)
 
@@ -105,5 +104,4 @@ class Receiver:
                 self.ventilator.send(data)
         except (Exception, KeyboardInterrupt) as e:
             log.error("Exception occured: %s", e)
-            self.context.destroy()
             raise
