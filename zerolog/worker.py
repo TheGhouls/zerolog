@@ -13,12 +13,21 @@ class BaseWorker:
     This class cannot be used "as is", it will raises an ``ImplementationError`` in ``process_data`` methode.
     ``BaseWorker`` provide only a skeleton to help you to develop your own workers
 
+    .. note::
+        For conveniance, default recv method for backend socket is ``recv_string()`` from pyzmq.
+        But you can change it easily by overloading it in your worker, for example::
+
+            def __init__(self, backend, *args, **kwargs):
+                super(MyWorkerClase, self).__init__(backend, *args, **kwargs)
+                self.recv_func = self.backend.recv_json()
+
     :param str backend: backend zeromq string to connect to receiver. e.g: ``ipc://unix.socket``
     """
     def __init__(self, backend, *args, **kwargs):
         self.context = zmq.Context()
         self.backend = self.context.socket(zmq.PULL)
         self.backend.connect(backend)
+        self.recv_func = self.backend.recv_string
 
     def process_data(self, data):
         """Process data received from backend
@@ -30,7 +39,7 @@ class BaseWorker:
     def run(self):
         try:
             while 1:
-                data = self.backend.recv()
+                data = self.recv_func()
                 self.process_data(data)
         except (Exception, KeyboardInterrupt) as e:
             log.error("Exception raised : %s", e)
