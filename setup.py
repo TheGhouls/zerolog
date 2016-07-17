@@ -14,9 +14,9 @@ setup(
     url="https://github.com/TheGhouls/zerolog",
     keywords=["logging", "logs", "zeromq", "rsyslog"],
     classifiers=[
-        "License :: OSI Approved :: MIT License"
-        "Programming Language :: Python :: 3.3"
-        "Programming Language :: Python :: 3.4"
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5"
     ],
     install_requires=[
