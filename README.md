@@ -11,7 +11,7 @@ It gives you all needed elements to start quickly and let you focus to processin
 
 Here is an explanatory scheme of the workflow
 
-[!https://github.com/TheGhouls/zerolog/raw/master/docs/img/zerolog-base-graph.png]
+![https://github.com/TheGhouls/zerolog/raw/master/docs/img/zerolog-base-graph.png]
 
 All you need to do here is creating your own woker to fit your needs, you can for example store logs in database, elasticsearch, etc. or parse messages and add some logic to them.
 Bonus: zerolog gives you a CLI tool to start all parts easily.
