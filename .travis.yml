@@ -1,22 +1,22 @@
 language: python
 python:
-  - '3.3'
-  - '3.4'
-  - '3.5'
+- '3.3'
+- '3.4'
+- '3.5'
 install:
-  - pip install -r requirements.txt
-  - pip install pytest -U pytest-runner pytest-timeout mock coverage
-  - pip install coveralls
+- pip install -r requirements.txt
+- pip install pytest -U pytest-runner pytest-timeout mock coverage
+- pip install coveralls
 script:
-  - python setup.py install
-  - coverage run --source zerolog -m py.test -v --cache-clear
+- python setup.py install
+- coverage run --source zerolog -m py.test -v --cache-clear
 after_success:
-  - coveralls
+- coveralls
 deploy:
   provider: pypi
   user: Emmanuel.Valette
   password:
-    secure: e5CWpC0Qs3vut/Zek2IOaUEXd0cIzjXSKe0kDjFL7n7kU+n+l5gqtkXR1PqOwo6tWqg7ZQkqXoTIlH8bOOJ6W+05fTtqi7WeaasfETG7Onus9RzaUoloQYIeC3vQtff90qm/h96+wQR7HS0KAxzOY0uhn7IyhblscrbzANg4ngH3mzlVgfmHyk/RCv7fHHUBGQZaKrZK8ySTwxJ1IK3mzpeMwFqds9QoGl7Ncn8RreU5z1HHowAbugqeMzcnrilEuZ5iZlN/Z5HX8ryTE2OU07ZXydhavTVwEOAXEzHiZhRhh4sVcbsxnL+EP90SX6Yn+7EiKFEuR2FulBw9ff3n3FqAMzt9XOWSVaB/6eGiHnwB7pkAObMhGrdslG4/+4GbHbOX5VEpkDk2qXFwoo14C4pDzq5TaVzbWy19rLoAeg0p8WwMs7CymOZEvkMYAw7s9mPhl32DRnhp/fNyyC6XfqaMF0SZ1lbh7Id04DIGwTQTnv1Bo+hp20sUHEf7NygXY6By06P9+EvjY4y+jUjy/EM3V24a2IZERbEZhVP2x4ZvG6AiCzUty0C/BsNgqiFjv346bKbGT5bJR6g2MgM4lN7RxxmveK5S6ClPoqGmn6wv8DDgQRkMK4beg9QZmEAFkuM/22pPnef2QC+I9klIzDS8BYtU4Rpal0h56ikjJQg=
+    secure: NKX1W33MXmTMgmbUCK3ULPrq4fDXmkUTBSoHrMOcFHFzGoYYyLKxcdCTCyObLCtzVaiv2vqg5F3znxv3FqA88e+/FdEDD5RvAXbAnSGz1DStsQQ/1LL6Ia8E1RxAJVUad/JZrcJgGGe9Gx0zk49f4CUZnHQHK+WcnXAYnMA9XwmDUva+xPi8qKHHOa/Llj1uXfMsoDcIzP0oFpIs0yhsDCa3bdnYJ+wFc0CGPSy0NyLjtrZP2CfwLuDH4Ht6T37w7yUQjAt01q+2z874NIAdPXxwlaX+HeXprqwjmEvl31+FYrYielKJ1TgAUqTmacUA4kL2e45Or9ov0Dbib/9OnNYmDa8Y8ZFJMRheXJ6MqbrrYYMhbr4fGk0DJImSDkEWWw/sk3IpaP6GhyrdRXk131a6YZiWOBvjNrRJyTU9V+trQpkjudXfAF83q02iaepYE6+5BK+4MXASjIGbiFrXMq9d8Ix5KlpPmkIHCfC3zNcAJRJMZSTXV03TCpY8cd0ezAWMcdXe2WsuF4ed+uUZO+SoBh2fLFiHpYWWo/H1F4i7dFYkiZU6b4ZctV8ntZGkwPj0Nbt2ntkc0CdZqJFTwUV90rLKdQuGm9wSKi4omYyahQghCiJM1FOlFETwzLnF+eYuZn5muzGmfO8fyp8UWGcxwjPLobKxv531yRD5zPs=
   on:
     tags: true
     branch: master
