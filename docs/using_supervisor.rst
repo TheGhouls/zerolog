@@ -18,7 +18,8 @@ For starting and managing your processes you can use for example supervisor. Her
    autorestart=true
 
    [program:zerolog-worker]
-   command=zerolog worker "tcp://127.0.0.1:6001" worker.MyWorker -d /home/user
+   command=zerolog worker "tcp://127.0.0.1:6200" worker.MyWorker -d /home/user
    numprocs=8
+   process_name=worker_%(process_num)s
     
 With this file, all your work chain is ready to get messages and process them
