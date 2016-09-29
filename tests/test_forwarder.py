@@ -76,5 +76,5 @@ def test_forwarder_basic_run(*args):
 @patch('zerolog.forwarder.zmq.Socket.bind')
 def test_forwarder_errors(*args):
     """Forwarder could correctly handle errors"""
-    start_forwarder(6040, 6041, "bad_type", "push")
-    start_forwarder(6050, 6051, "sub", "bad_type")
+    start_forwarder(6040, 6041, backend_socket="bad_type", frontend_socket="push")
+    start_forwarder(6050, 6051, backend_socket="sub", frontend_socket="bad_type")
