@@ -3,7 +3,8 @@ from zerolog.forwarder import start_forwarder
 
 def run(args):
     """Main run action"""
-    start_forwarder(args.frontend, args.backend, args.monitor)
+    start_forwarder(args.frontend, args.backend, args.monitor,
+                    args.backend_socket, args.frontend_socket)
 
 
 def forwarder_command(sp):
@@ -28,6 +29,16 @@ def forwarder_command(sp):
         "--monitor",
         help="monitor port for publishing data",
         type=int,
+        default=None
+    )
+    parser.add_argument(
+        "--backend-socket",
+        help="valid zeromq socket type to use as backend socket",
+        default=None
+    )
+    parser.add_argument(
+        "--frontend-socket",
+        help="valud zeromq socket type to use as frontend socket",
         default=None
     )
     parser.set_defaults(func=run)

@@ -66,3 +66,15 @@ def test_forwarder_basic_run(*args):
     """forwarder should correctly run with different parameters"""
     start_forwarder(6010, 6011, 6012)
     start_forwarder(6020, 6021)
+    start_forwarder(6030, 6031, "sub", "push")
+
+
+@patch('zerolog.forwarder.zmq.proxy')
+@patch('zerolog.forwarder.zmq.Context')
+@patch('zerolog.forwarder.zmq.Context.socket')
+@patch('zerolog.forwarder.zmq.Socket')
+@patch('zerolog.forwarder.zmq.Socket.bind')
+def test_forwarder_errors(*args):
+    """Forwarder could correctly handle errors"""
+    start_forwarder(6040, 6041, "bad_type", "push")
+    start_forwarder(6050, 6051, "sub", "bad_type")
