@@ -39,6 +39,7 @@ Contents:
    receiver_logging
    creating_workers
    using_supervisor
+   using_with_logstash
    commands_reference
    api
 

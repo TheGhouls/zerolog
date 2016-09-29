@@ -18,6 +18,16 @@ Bonus: zerolog gives you a CLI tool to start all parts easily.
 
 You don't want to code your worker using python ? Well good news: zeromq gives you [bindings for many programming languages](http://zeromq.org/bindings:_start) so you can create your own worker implementation using your favorite programming language
 
+## Using zerolog with logstash
+
+Note that you can also use zerolog with logstash pretty easily. Since logstash got a zeromq output, you can replace forwarder or receiver by logstash
+
+![https://github.com/TheGhouls/zerolog/blob/master/docs/img/zerolog_logstash_forwarder.png](https://github.com/TheGhouls/zerolog/blob/master/docs/img/zerolog_logstash_forwarder.png)
+
+![https://github.com/TheGhouls/zerolog/blob/master/docs/img/zerolog_logstash_receiver.png](https://github.com/TheGhouls/zerolog/blob/master/docs/img/zerolog_logstash_receiver.png)
+
+More informations are avaibles in the documentation.
+
 ## Installation
 
 Using pip
