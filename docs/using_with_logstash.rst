@@ -8,7 +8,7 @@ Replacing zerolog forwarder with logstash
 
 Logstash can act like the forwarder, all you need to do is to configure your logstash to output logs to a zeromq pub socket, for example :
 
-.. code-block::
+.. code-block:: bash
 
    input {
      tcp {
@@ -33,7 +33,7 @@ Replacing zerolog receiver with logstash
 Maybe you don't need any forwarder at all and you only want a simple receiver to workers pattern. Logstash can also replaces
 receiver or sends logs directly to workers, for example :
 
-.. code-block:
+.. code-block:: bash
 
    input {
      tcp {
