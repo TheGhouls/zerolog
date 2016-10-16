@@ -13,7 +13,7 @@ Here is an explanatory scheme of the workflow
 
 ![https://github.com/TheGhouls/zerolog/raw/master/docs/img/zerolog-base-graph.png](https://github.com/TheGhouls/zerolog/raw/master/docs/img/zerolog-base-graph.png)
 
-All you need to do here is creating your own woker to fit your needs, you can for example store logs in database, elasticsearch, etc. or parse messages and add some logic to them.
+All you need to do here is creating your own worker to fit your needs, you can for example store logs in database, elasticsearch, etc. or parse messages and add some logic to them.
 Bonus: zerolog gives you a CLI tool to start all parts easily.
 
 You don't want to code your worker using python ? Well good news: zeromq gives you [bindings for many programming languages](http://zeromq.org/bindings:_start) so you can create your own worker implementation using your favorite programming language
